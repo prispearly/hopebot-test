@@ -1,4 +1,4 @@
-#!/home/runner/Python/venv/bin/python3
+#!/Users/prispearls/Documents/Github/hopebot-test/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

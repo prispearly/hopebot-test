@@ -4,6 +4,9 @@ import os
 import openai
 from aiogram import Bot, Dispatcher, executor, types
 from keep_alive import keep_alive
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
 
 bot = Bot(token=os.getenv("tg_token"))
 dp = Dispatcher(bot)
