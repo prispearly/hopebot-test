@@ -1,17 +1,18 @@
 import gspread
-from google.oauth2.service_account import Credentials
 from bs4 import BeautifulSoup
 import requests
-from flask import Flask, request, jsonify
-from threading import Thread
 import logging
 import openai
 import os
 
-import logging
-import openai
-import os
+from google.oauth2.service_account import Credentials
+from flask import Flask, request, jsonify
+from threading import Thread
+from dotenv import load_dotenv
 from fetch_frm_gsheets import fetch_gsheets_html, fetch_values_from_html, fetch_content_from_row
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
