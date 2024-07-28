@@ -1,0 +1,33 @@
+{
+    "message": "The registration for this event has closed. You may subscribe to these channels to stay tuned for the latest updates on the upcoming runs of this and other events you may be interested in with FamilyLife as well!",
+        "platform":"kommunicate",
+        "metadata": {
+            "contentType": "300",
+            "templateId": "3",
+            "payload": [{
+                    "type": "link",
+                    "url": "https://t.me/FamilyLifeSingapore",
+                    "name": "Family Life Tele Channel",
+                    "openLinkInNewTab": true
+                },
+                {
+                    "type": "link",
+                    "url": "https://www.instagram.com/familylifesingapore/",
+                    "name": "Family Life Instagram",
+                    "openLinkInNewTab": true
+                },
+    {
+                    "type": "link",
+                    "url": "https://t.me/FamilyLifeSingaporeMenSteppingUp",
+                    "name": "Stepping Up (Men's Ministry) Tele Channel",
+                    "openLinkInNewTab": true
+                },
+    {
+                    "type": "link",
+                    "url": "https://www.facebook.com/wowmomSg/",
+                    "name": "Wow Moms Facebook Page",
+                    "openLinkInNewTab": true
+                }
+            ]
+        }
+    }

@@ -11,6 +11,7 @@ from flask import Flask, request, jsonify
 from threading import Thread
 from dotenv import load_dotenv
 from fetch_frm_gsheets import fetch_gsheets_html, fetch_values_from_html, fetch_content_from_row
+from helper_functions import get_message_from_json
 
 # Load environment variables from .env file
 load_dotenv()
@@ -109,6 +110,7 @@ def event_query():
     # Load OpenAI API key from environment variable
     openai.api_key = os.getenv("ai_token")
 
+    # warning: this gsheets is only updated every 5 min
     google_sheet_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQzZxOdW4jNDNDwRPrE7NlPKF_8vTJI7YlqEUabvW0ogYgoP9rzT0C0DXBFhm01iNhenGCgeXjUJi1k/pubhtml?gid=1564820060&single=true'
 
     html = fetch_gsheets_html(google_sheet_url)
@@ -153,12 +155,17 @@ def event_query():
     # ['Art of Marriage Retreat 17-18 Aug 2024 (Sat-Sun)', 'Art Of Marriage 3D2N Retreat (24-26 May 2024)', 'Marriage Preparation Course (Aug 2024)', 'Keeping Your Covenant Small Group for Married Couples (July 2024)', 'HomeBuilders Small Group for Married Couples', "Pay It Forward (For Aug'23 AOM Participants)"]
     # '''
     
-    # todo1: check if text from gsheet says "stay tuned" -> reply set answer
+    
 
     chatgpt_role = "you will be given a user question and a list of possible matching events, enumerate the events in the list, starting from 0. Return as output, in the form of a list of integers, which coressponding events in the given list of events best matches the query. you may return a list with more than one integer."
 
+    # temp put here - input2
+    input2_list = ['Art of Marriage Retreat 17-18 Aug 2024 (Sat-Sun)', 'Art Of Marriage 3D2N Retreat (24-26 May 2024)', 'Marriage Preparation Course (Aug 2024)', 'Art of Parenting Small Group (Feb 2024)', 'Art of Parenting Free Preview (12 Oct 2024)', "Stepping Up Men's Series & Free Preview (Sep - Nov 2024)", 'Keeping Your Covenant Small Group for Married Couples (July 2024)', 'HomeBuilders Small Group for Married Couples', "Pay It Forward (For Aug'23 AOM Participants)"]
+    input2 = str(input2_list)
     selected_row = gpt(message, input2, chatgpt_role)
     print("MATCHED CATEGORY:", selected_row)  
+
+
 
     import re
     # Use regular expression to find digits in the string
@@ -172,6 +179,19 @@ def event_query():
 
     else:
         print("No number found in the selected_row string.")
+        
+            
+    # done1: check if text from selected_row in gsheet says "stay tuned" -> reply set answer  
+    """
+    if column_values contains "stay tuned"
+    """
+    # return column values
+    gsheet_content = fetch_content_from_row(selected_row_int, html)
+    if "stay tuned" in gsheet_content:
+        message_file_path = "config/rich-messaging-templates/subscribe_for_next_runs.json"
+        json_message = get_message_from_json(message_file_path)
+        message = [json_message,]
+        return jsonify(message) 
 
 
     # input1 = "when is the next art of marriage retreat, is there another one after may?"
