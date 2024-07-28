@@ -26,7 +26,17 @@ openai.api_key = os.getenv("ai_token")
 # Initialize Flask app
 app = Flask(__name__)
 
-
+def gpt_remove_emails(content):
+    
+    chatgpt_role = """
+    you will be given event detail content
+    help me remove all emails as contact info for this event
+    the resultant text should not contain any email info
+    """
+    message = '' #empty message
+    answer = gpt(message, content, chatgpt_role)
+    return answer
+    
 def gpt(message):
     """
     Function to interact with OpenAI's GPT-3 model.
@@ -203,6 +213,11 @@ def event_query():
     
     # todo2: remove emails from webscraping content
 
+        
+    email_cleaned_input2 = gpt_remove_emails(input2)
+    # print("Should not contain email here in content: " + email_cleaned_input2)
+    input2 = email_cleaned_input2
+
     chatgpt_role = """
 
     help me answer the user's question in input1, based on the info in input2, and provide other general info about the event as well in addition to the question, include date, Dates & Time: Venue: Cost: Closing Date: Link to register:. For more information, you can visit the registration link provided above.
@@ -219,7 +234,6 @@ def event_query():
     HomeBuilders Small Group for Married Couples
      and thereby return integer 4
     """
-    
 
     answer = gpt(message, input2, chatgpt_role)
     print(answer)
