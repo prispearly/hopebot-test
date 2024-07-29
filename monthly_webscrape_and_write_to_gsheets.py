@@ -8,7 +8,7 @@ from datetime import datetime
 from clean_titles import clean_and_return_title
 
 # Google Sheets API setup
-SERVICE_ACCOUNT_FILE = '/Users/prispearls/Documents/Github/hopebot-test/config/gspread/service_account.json'
+SERVICE_ACCOUNT_FILE = 'config/gspread/service_account.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # https://www.googleapis.com/auth/spreadsheets.readonly,
 
