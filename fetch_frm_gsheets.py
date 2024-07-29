@@ -29,7 +29,8 @@ def extract_column_values(html, column_index):
                 column_value = cells[column_index].text.strip()
 
                 # Append the value to the list
-                column_values.append(column_value)
+                if column_value:
+                    column_values.append(column_value)
 
     return column_values
 
