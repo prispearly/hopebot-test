@@ -6,11 +6,11 @@ import urllib
 from write_to_gsheet import write_data_to_sheet
 from datetime import datetime
 from clean_titles import clean_and_return_title
+from helper_functions import gpt_remove_emails
 
 # Google Sheets API setup
 SERVICE_ACCOUNT_FILE = 'config/gspread/service_account.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-# https://www.googleapis.com/auth/spreadsheets.readonly,
 
 creds = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
@@ -92,9 +92,11 @@ def main():
     print("LINKS FROM GSHEETS FETCHED", separated_links_list)
 
     data = []
+    print("Doing webscraping and removing emails from event content now ...")
     for link in separated_links_list:
         event_text, title = scrape_event_text_from_link(link)
-        data.append([link, title, event_text, str(datetime.now())])
+        event_text_without_email = gpt_remove_emails(event_text)
+        data.append([link, title, event_text_without_email, str(datetime.now())])
 
     write_data_to_sheet(data, SPREADSHEET_ID, "latest event info")
 
