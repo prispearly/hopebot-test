@@ -147,8 +147,10 @@ def event_query():
         return generated_text
 
     # input1 = "when is the next art of marriage retreat, is there another one after may?"
-
-    input2 = str(fetch_values_from_html(1, html))
+    
+    input2_list = fetch_values_from_html(1, html)
+    input2 = str(input2_list)
+    
     # input2 = '''
     # ['Art of Marriage Retreat 17-18 Aug 2024 (Sat-Sun)', 'Art Of Marriage 3D2N Retreat (24-26 May 2024)', 'Marriage Preparation Course (Aug 2024)', 'Keeping Your Covenant Small Group for Married Couples (July 2024)', 'HomeBuilders Small Group for Married Couples', "Pay It Forward (For Aug'23 AOM Participants)"]
     # '''
@@ -163,20 +165,48 @@ def event_query():
     import re
     # Use regular expression to find digits in the string
     numbers = re.findall(r'\d+', selected_row)
+        # Initialize selected_row_int as None
+    selected_row_int = None
 
-    # Convert the first number found to an integer
-    if numbers:
-        selected_row_int = int(numbers[0])  # so dangerous WTH
+    # Check if numbers list is not empty and input2_list is valid
+    if numbers and len(input2_list) > 0:
+        for num in numbers:
+            try:
+                # Convert the current number to an integer
+                candidate_int = int(num)
+                
+                # Check if the converted integer is within the valid index range
+                if 0 <= candidate_int < len(input2_list):
+                    selected_row_int = candidate_int
+                    break  # Exit for loop once a valid number is found
+                print("integer out of list length")            
+            except ValueError:
+                # Handle cases where conversion fails
+                print(f"'{num}' is not a valid integer.")
 
-        print("MATCHED INTEGER:", selected_row_int) 
-
+    # Check if a valid integer was found
+    if selected_row_int is not None:
+        print(f"Selected event: {input2_list[selected_row_int]}")
     else:
-        print("No number found in the selected_row string.")
+        print("No valid number found in the specified range.")
 
+    # # Convert the first number found to an integer
+    # if numbers:
+    #     selected_row_int = int(numbers[0])  # so dangerous WTH
 
-    # input1 = "when is the next art of marriage retreat, is there another one after may?"
+    #     print("MATCHED INTEGER:", selected_row_int) 
+    #     # print("MATCHED CATEGORY:", selected_row_int, input2_list[selected_row_int])
+
+    # else:
+    #     print("No number found in the selected_row string.")
+        
+            
+    # done1: check if text from selected_row in gsheet says "stay tuned" -> reply set answer  
+    """
+    if column_values contains "stay tuned"
+    """
+    # return column values
     input2 = fetch_content_from_row(selected_row_int, html)
-
     # input2 = '''
     # Content from column 3 , row 1 : Art Of Marriage 3D2N Retreat (24-26 May 2024)6 video sessions (English audio and subtitles)based on biblical principles:Session 1Love Happens (Purpose of Marriage)Session 2Love Fades (Drift to Isolation)Session 3Love Dances (Roles)Session 4Love Interrupted (Communication)Session 5Love Sizzles (Romance & Sex)Session 6Love Always (Legacy)Highlights* Expert interviews* Real-life stories* Humorous vignettes* Couple projects* Time with spouse (minimal interaction with other couples)Things to note* Transport to and from the hotel on your own (15-min drive from JB CIQ)* Check-in at hotel reception on your own with your passports, anytime from Day 1, 3pm* Retreat program starts on Day 2 (Refer to Schedule)* Parking for hotel guests at RM5 nett per entry (every 24 hours or part thereof), validation at Hotel Reception is required* Passports must be valid for at least 6 months at time of retreat* FamilyLife Singapore will not be liable for any loss incurred due to our event* Participants are encouraged to purchase own travel insuranceWhat the ticket price includes*1 ticket for 1 couple* 2 nights' stay (Double Urban room)* Conference with full-color manuals* Breakfast, lunch & tea-breaks on Days 2 & 3* Malaysia tourism tax* Excludes room service, parking fee, and other incidentalsTo Register* Click on an option box* Closing date: 5 May* Registration full or closed? Emailuson vacancies.ScheduleFAQsTestimonies sign up at: http://Cru.sg/aom3D2N
     # '''
