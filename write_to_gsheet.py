@@ -2,7 +2,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 
-def write_data_to_sheet(data, spreadsheet_id, worksheet_title):
+def write_data_to_sheet(data, spreadsheet_name, worksheet_title):
 
           # Path to your service account JSON file
           SERVICE_ACCOUNT_FILE = './config/gspread/service_account.json'
@@ -21,7 +21,7 @@ def write_data_to_sheet(data, spreadsheet_id, worksheet_title):
           gc = gspread.authorize(creds)
 
           # Open the Google Sheet by its name
-          spreadsheet = gc.open_by_key(spreadsheet_id)
+          spreadsheet = gc.open(spreadsheet_name)
 
           # Get the worksheet by title
           worksheet = spreadsheet.worksheet(worksheet_title)
