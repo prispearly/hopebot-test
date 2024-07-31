@@ -4,6 +4,7 @@ import requests
 import logging
 import openai
 import os
+import monthly_webscrape_and_write_to_gsheets
 
 from google.oauth2.service_account import Credentials
 from flask import Flask, request, jsonify
@@ -48,12 +49,21 @@ def gpt(message):
     return generated_text
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     """
     Endpoint to check if the server is running.
     """
     return "Alive"
+
+
+@app.route('/gformsubmit', methods=['POST'])
+def gformsubmit():
+    """
+    Endpoint that triggers webscraping from links once google form submitted.
+    """
+    monthly_webscrape_and_write_to_gsheets.main()
+    return "Done"
 
 
 @app.route('/webhook', methods=['POST'])
@@ -142,6 +152,8 @@ def event_query():
     # input2 = '''
     # ['Art of Marriage Retreat 17-18 Aug 2024 (Sat-Sun)', 'Art Of Marriage 3D2N Retreat (24-26 May 2024)', 'Marriage Preparation Course (Aug 2024)', 'Keeping Your Covenant Small Group for Married Couples (July 2024)', 'HomeBuilders Small Group for Married Couples', "Pay It Forward (For Aug'23 AOM Participants)"]
     # '''
+    
+    # todo1: check if text from gsheet says "stay tuned" -> reply set answer
 
     chatgpt_role = "you will be given a user question and a list of possible matching events, enumerate the events in the list, starting from 0. Return as output, in the form of a list of integers, which coressponding events in the given list of events best matches the query. you may return a list with more than one integer."
 
@@ -168,6 +180,8 @@ def event_query():
     # input2 = '''
     # Content from column 3 , row 1 : Art Of Marriage 3D2N Retreat (24-26 May 2024)6 video sessions (English audio and subtitles)based on biblical principles:Session 1Love Happens (Purpose of Marriage)Session 2Love Fades (Drift to Isolation)Session 3Love Dances (Roles)Session 4Love Interrupted (Communication)Session 5Love Sizzles (Romance & Sex)Session 6Love Always (Legacy)Highlights* Expert interviews* Real-life stories* Humorous vignettes* Couple projects* Time with spouse (minimal interaction with other couples)Things to note* Transport to and from the hotel on your own (15-min drive from JB CIQ)* Check-in at hotel reception on your own with your passports, anytime from Day 1, 3pm* Retreat program starts on Day 2 (Refer to Schedule)* Parking for hotel guests at RM5 nett per entry (every 24 hours or part thereof), validation at Hotel Reception is required* Passports must be valid for at least 6 months at time of retreat* FamilyLife Singapore will not be liable for any loss incurred due to our event* Participants are encouraged to purchase own travel insuranceWhat the ticket price includes*1 ticket for 1 couple* 2 nights' stay (Double Urban room)* Conference with full-color manuals* Breakfast, lunch & tea-breaks on Days 2 & 3* Malaysia tourism tax* Excludes room service, parking fee, and other incidentalsTo Register* Click on an option box* Closing date: 5 May* Registration full or closed? Emailuson vacancies.ScheduleFAQsTestimonies sign up at: http://Cru.sg/aom3D2N
     # '''
+    
+    # todo2: remove emails from webscraping content
 
     chatgpt_role = """
 
