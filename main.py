@@ -15,7 +15,6 @@ openai.api_key = os.getenv("ai_token")
 
 keep_alive()
 
-
 #multiple users use at same time ...
 #will sessions contaminate each other ....
 
@@ -39,6 +38,9 @@ messages=[
 
 @dp.message_handler()
 async def gpt(message: types.Message):
+  
+  # Send immediate typing feedback
+  await bot.send_chat_action(message.chat.id, 'typing')
 
   messages.append({"role": "user", "content": message.text})
   print("user message received and added to msg chain")
@@ -53,7 +55,6 @@ async def gpt(message: types.Message):
   top_p=1,
   frequency_penalty=0.0,
   presence_penalty=0.0)
-
 
   generated_text = response.choices[0].message.content
   messages.append({"role": "assistant", "content": generated_text})
