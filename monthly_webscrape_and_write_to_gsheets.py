@@ -73,11 +73,19 @@ def scrape_event_text_from_link(url):
     buttons = soup.find_all('button', class_="rounded-0 w-100 btn_1 btn boxed-btn mb-3")
     for button in buttons:
         text_content += button.get_text(strip=True)
-
+    
+    # scrape several types of content text
+    # Find the specific div containing the text
+    content_div = soup.find('div', class_='ck-content')
+    # Loop through all paragraphs and span tags within the div
+    if content_div:
+        for tag in content_div.find_all(['p', 'span']):
+            text_content += tag.get_text(strip=True) + ' '
     span_tags = soup.find_all(
         'span', style=lambda style: style and 'font-size:11pt' in style)
-    for span in span_tags:
-        text_content += span.get_text(strip=True)
+    if span_tags:
+        for span in span_tags:
+            text_content += span.get_text(strip=True)
 
     return text_content, str(cleaned_titles)
 
