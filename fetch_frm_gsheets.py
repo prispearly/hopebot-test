@@ -44,27 +44,25 @@ def fetch_values_from_html(column_index, html):
 
 def fetch_content_from_row(row_index, html):
 
-    # row index starts from 0 
-    print("GSHEETS ROW FETCHING FROM:", row_index)
-    
-    # Example 2: Fetch content from column 3 of a specific row
-    # row_index = 1  # Change this to the desired row index
+    # Indexing starts from 0
+    column_index = 2  # Assuming you are fetching from column index 2
+    sign_up_column_index = 0  # Assuming the sign-up link is in column index 0
 
- 
-    column_index = 2  # Indexing starts from 0
-    content = extract_column_values(html, column_index)[row_index]
+    # Fetch the list of column values
+    column_values = extract_column_values(html, column_index)
+    sign_up_values = extract_column_values(html, sign_up_column_index)
     
-    sign_up_link = extract_column_values(html, 0)[row_index]
-    
-    content = content + " sign up at: " + sign_up_link
-    print("ITS ALL GONE WRONG HERE OR NOT:")
-    
-    if content is not None:
-        print("Content from column", column_index + 1, ", row", row_index, ":",
-              content)
+    # Check if row_index is within range for both column_values and sign_up_values
+    if 0 <= row_index < len(column_values) and 0 <= row_index < len(sign_up_values):
+        content = column_values[row_index]
+        sign_up_link = sign_up_values[row_index]
+        content += " sign up at: " + sign_up_link
+        
+        print("Content from column", column_index + 1, ", row", row_index, ":", content)
     else:
-        print("Row", row_index, "not found or does not contain data in column",
-              column_index + 1)
+        print(f"Error: Row index {row_index} is out of range.")
+        content = ""
+
     return content
     
 def main():

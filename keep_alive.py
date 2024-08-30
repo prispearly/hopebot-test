@@ -157,7 +157,29 @@ def event_query():
     
     # todo1: check if text from gsheet says "stay tuned" -> reply set answer
 
-    chatgpt_role = "you will be given a user question and a list of possible matching events, enumerate the events in the list, starting from 0. Return as output, in the form of a list of integers, which coressponding events in the given list of events best matches the query. you may return a list with more than one integer."
+    chatgpt_role = """
+    you will be given a user question and a list of possible matching events, enumerate the events in the list, starting from 0. 
+    Return as output, in the form of a list, containing only 1 integer, which coressponding event in the given list of events best matches the query. 
+    try to match the event title as closely to the user question as possible, where there are similarly named events.
+    you may return a list with only one integer.
+    
+    for example 
+    query: how can i sign up for AOM
+    you may match it with the events:
+    Art of Marriage Retreat 17-18 Aug 2024 (Sat-Sun)
+    Art Of Marriage 3D2N Retreat (24-26 May 2024)
+    and thereby return: [0]
+
+    query: how can i join a homebuilders small group
+    you may match it with the event:
+    HomeBuilders Small Group for Married Couples
+    and thereby return: [7]
+    
+    query: join a wow mom group
+    you may match it with the event:
+    wow mom small group
+    and thereby return: [10]
+    """
 
     selected_row = gpt(message, input2, chatgpt_role)
     print("MATCHED CATEGORY:", selected_row)  
@@ -215,19 +237,11 @@ def event_query():
 
     chatgpt_role = """
 
-    help me answer the user's question in input1, based on the info in input2, and provide other general info about the event as well in addition to the question, include date, Dates & Time: Venue: Cost: Closing Date: Link to register:. For more information, you can visit the registration link provided above.
+    help me answer the user's question in input1, based on the info in input2, 
+    and provide other general info about the event as well in addition to the question, 
+    include date, Dates & Time: Venue: Cost: Closing Date: Link to register:. 
+    For more information, you can visit the registration link provided above.
 
-    for example 
-    query: how can i sign up for AOM
-    you may match it with the events:
-    Art of Marriage Retreat 17-18 Aug 2024 (Sat-Sun)
-    Art Of Marriage 3D2N Retreat (24-26 May 2024)
-    and thereby return integers 0 or 1
-
-     query: how can i join a homebuilders small group
-     you may match it with the event:
-    HomeBuilders Small Group for Married Couples
-     and thereby return integer 4
     """
     
 
