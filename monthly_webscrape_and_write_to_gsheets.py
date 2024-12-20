@@ -1,6 +1,7 @@
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import requests
+import re
 from bs4 import BeautifulSoup
 import urllib
 from write_to_gsheet import write_data_to_sheet
@@ -38,11 +39,20 @@ def fetch_google_sheet():
 
     return timestamp, event_link, email_address
 
+def is_valid_url(link):
+    # Regex pattern to check if the link is a valid URL format
+    pattern = re.compile(r'^(http:\/\/|https:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}.*$')
+    return bool(pattern.match(link)) 
+
 def separate_links(concatenated_links_str):
     separated_links = concatenated_links_str.split("http://")
     separated_links = [link.strip() for link in separated_links if link.strip()]  # Strip whitespace
-    separated_links_list = ['http://' + link for link in separated_links]
+    separated_links_list = ['http://' + link for link in separated_links if is_valid_url('http://' + link)]
     return separated_links_list
+
+
+def is_valid_event_url(link):
+    return link.startswith("https://mde.cru.org.sg/")
 
 def get_redirected_url(url):
     try:
@@ -55,21 +65,39 @@ def get_redirected_url(url):
 
 def scrape_event_text_from_link(url):
     text_content = ""
+    cleaned_title = "" 
+
     redirected_url = get_redirected_url(url)
+    
+    if not is_valid_event_url(redirected_url):
+        error_msg = f" not valid event URL: {redirected_url}, original URL: {url}. Check if URL is correct. "
+        print(error_msg)
+        return error_msg, cleaned_title    
     if not redirected_url:
-        return text_content
+        error_msg = f" unable to resolve URL: {redirected_url}, original URL: {url}. Check if URL is correct. "
+        print(error_msg)
+        return error_msg, cleaned_title
 
     response = requests.get(redirected_url)
     if response.status_code != 200:
-        print(f"Failed to fetch {redirected_url}: {response.status_code}")
-        return text_content
+        error_msg = f"Failed to fetch {redirected_url}: {response.status_code}"
+        print(error_msg)
+        return error_msg, cleaned_title
 
+    ## webscraping based on specific html fonts
     soup = BeautifulSoup(response.text, 'html.parser')
     title = soup.find('div', class_='hero-cap event-name')
+    
+    # Handle case if title is None
     if title:
-        cleaned_titles = clean_and_return_title(title)
-        text_content += cleaned_titles
-
+        cleaned_title = clean_and_return_title(title)
+        text_content += cleaned_title
+    else:
+        error_msg = f"No event found for URL: {redirected_url}, original URL: {url}. Check if URL is correct. "
+        print(error_msg)
+        return error_msg, cleaned_title
+        
+        
     buttons = soup.find_all('button', class_="rounded-0 w-100 btn_1 btn boxed-btn mb-3")
     for button in buttons:
         text_content += button.get_text(strip=True)
@@ -87,7 +115,7 @@ def scrape_event_text_from_link(url):
         for span in span_tags:
             text_content += span.get_text(strip=True)
 
-    return text_content, str(cleaned_titles)
+    return text_content, str(cleaned_title)
 
 def main():
     timestamp, event_link, email_address = fetch_google_sheet()
