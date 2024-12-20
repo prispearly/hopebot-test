@@ -40,7 +40,7 @@ def fetch_google_sheet():
 
 def separate_links(concatenated_links_str):
     separated_links = concatenated_links_str.split("http://")
-    separated_links = [link for link in separated_links if link]
+    separated_links = [link.strip() for link in separated_links if link.strip()]  # Strip whitespace
     separated_links_list = ['http://' + link for link in separated_links]
     return separated_links_list
 
