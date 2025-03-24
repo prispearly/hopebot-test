@@ -117,7 +117,7 @@ def webhook():
             {
                 "message": (
                     "🤖 Ask me about Easter 🐰🥚, why Christians 📖 ✝️ commemorate Easter, or any other questions you may have about exploring how faith impacts everyday life! "
-                    "Feel free to ask anything! :D \n\nI may take a while to reply, please be patient with me!"
+                    "Feel free to ask anything! :D \n\nI may take a while to reply, please be patient with me! 🌻"
                 ),
                 "platform": "kommunicate",
                 "metadata": {
@@ -145,7 +145,7 @@ def webhook():
     if any(keyword in user_message for keyword in keywords):
         response_message = [
             {
-                "message": "sure! you can drop us an email at digital@cru.org.sg and we will get back to you in 1-2 working days!",
+                "message": "sure! you can drop us an email at digital@cru.org.sg!",
                 "platform": "kommunicate",
             }
         ]
@@ -164,12 +164,14 @@ def webhook():
                     "• Hasn’t science disproved Christianity?\n"
                     "• Don’t all good people go to heaven?\n"
                     "• Can we trust what the Bible says?\n"
-                    "• How can we know God exists?"
+                    "• Aren’t all religions just cults?\n"
+                    "• Why does God allow suffering?\n"
+                    "• How can we know God exists?\n"
                 )
             }
         ]
-        return jsonify(response_message), 200
-
+        return jsonify(response_message), 200    
+    
     # 3. For any other messages, process via OpenAI chat functionality.
     # Use the "from" field from the payload as the user ID (default to "default" if not provided)
     user_id = payload.get("from", "default")
