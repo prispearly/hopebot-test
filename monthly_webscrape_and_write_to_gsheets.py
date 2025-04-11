@@ -70,11 +70,11 @@ def scrape_event_text_from_link(url):
     redirected_url = get_redirected_url(url)
     
     if not is_valid_event_url(redirected_url):
-        error_msg = f" not valid event URL: {redirected_url}, original URL: {url}. Check if URL is correct. "
+        error_msg = f" not valid event URL: {redirected_url}, original short URL: {url}. Check if short URL leads to correct MDE link. "
         print(error_msg)
         return error_msg, cleaned_title    
     if not redirected_url:
-        error_msg = f" unable to resolve URL: {redirected_url}, original URL: {url}. Check if URL is correct. "
+        error_msg = f" unable to get redirected URL: {redirected_url}, short URL: {url}. Check if short URL is correct. "
         print(error_msg)
         return error_msg, cleaned_title
 

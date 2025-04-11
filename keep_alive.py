@@ -1,4 +1,13 @@
 import gspread
+
+from flask_cors import CORS
+
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+
 from bs4 import BeautifulSoup
 import requests
 import logging
@@ -24,7 +33,7 @@ openai.api_key = os.getenv("ai_token")
 
 # Initialize Flask app
 app = Flask(__name__)
-
+CORS(app, resources={r"/join-small-grp-request": {"origins": "*"}})
 
 def gpt(message):
     """
@@ -65,6 +74,60 @@ def gformsubmit():
     monthly_webscrape_and_write_to_gsheets.main()
     return "Done"
 
+@app.route('/join-small-grp-request', methods=['POST'])
+def join_small_grp_request():
+    """
+    Endpoint to receive form submission from Kommunicate and send an email.
+    """
+    try:
+        # Get JSON data from request
+        data = request.json
+        print(data)
+        
+        name = data.get("Name")
+        phone = data.get("Phone", "")
+        email = data.get("Email")
+        ministry = data.get("Ministry Type")
+        
+        # Validate required fields
+        if not name or not email or not ministry:
+            return jsonify({"error": "Missing required fields"}), 400
+
+        # Prepare email content
+        recipient = "priscillatan@cru.org.sg"
+        subject = "[from cru connect bot] request to join ministry group"
+        body = f"""Would like to join {ministry} small group
+
+        Name: {name}
+        Phone: {phone}
+        Email: {email}
+        """
+
+        sender_email = os.getenv("email_address")
+        sender_password = os.getenv("email_password")
+
+        if not sender_email or not sender_password:
+            raise ValueError("Missing sender email or password in environment variables.")
+
+        # Compose email
+        msg = MIMEMultipart()
+        msg["From"] = sender_email
+        msg["To"] = recipient
+        msg["Subject"] = subject
+        msg.attach(MIMEText(body, "plain"))
+
+        # Send via SMTP
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, recipient, msg.as_string())
+
+        print("Email sent successfully")
+        return jsonify({"message": "Email sent successfully!"}), 200
+
+    except Exception as e:
+        print("Error:", str(e))
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -237,10 +300,18 @@ def event_query():
 
     chatgpt_role = """
 
-    help me answer the user's question in input1, based on the info in input2, 
-    and provide other general info about the event as well in addition to the question, 
-    include date, Dates & Time: Venue: Cost: Closing Date: Link to register:. 
-    For more information, you can visit the registration link provided above.
+    Instructions:
+    Input1: User’s question
+    Input2: Reference details
+    Help me answer the user's question in input1, based on the info in input2
+
+    Response Guidelines:
+    Next Event Inquiry (eg when is the next run): Provide the event’s date, time, and registration closing date.
+    Sign-Up Link Request: Return only the sign-up link.
+    Content Overview Inquiry (eg what will this cover): Provide info such as what to expect, topics that will be covered, how many sessions etc.
+    General Questions: Answer the question specifically.
+
+    Keep the answer under 50 words.
 
     """
     

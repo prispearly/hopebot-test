@@ -38,3 +38,4 @@ tqdm==4.66.4
 urllib3==2.2.2
 Werkzeug==3.0.3
 yarl==1.9.4
+flask-cors==5.0.0
